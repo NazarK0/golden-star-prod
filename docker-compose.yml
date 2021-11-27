@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+  admin-public-api:
+    image: 31081991/gs_public-api
+    environment: 
+      - DB_STR=postgres://superadmin:1111@db/app_db
+    container_name: admin-api
+    ports:
+      - '8084:80'
+    depends_on:
+      - db
+  admin-ui-api:
+    image: 31081991/gs_ui-api
+    environment: 
+      - DB_STR=postgres://superadmin:1111@db/app_db
+    container_name: admin-uiApi
+    ports:
+      - '8083:80'
+    depends_on:
+      - db
+  admin-ui:
+    image: 31081991/gs_admin-ui
+    container_name: admin-ui
+    ports:
+      - '8082:80'
+    depends_on:
+      - admin-ui-api
+      - db
+  app-ui:
+    image: 31081991/gs_app-ui
+    container_name: app-ui
+    ports:
+      - '8080:80'
+    depends_on:
+      - admin-public-api
+      - db
+  db:
+    image: postgres 
+    container_name: db
+    restart: always
+    ports: 
+      - "5432:5432"
+    environment: 
+      - POSTGRES_USER=superadmin
+      - POSTGRES_PASSWORD=1111
+      - POSTGRES_DB=app_db
+    volumes: 
+      - db-volume:/data/db
+volumes: 
+  db-volume:
